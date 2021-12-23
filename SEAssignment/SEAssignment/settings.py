@@ -62,9 +62,11 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'SEAssignment.pipelines.SeassignmentPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'SEAssignment.pipelines.SeassignmentPipeline': 300,
+}
+MONGO_URI = 'mongodb+srv://tkohli00:test@cluster0.it64y.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+MONGO_DATABASE = 'tanishkakohli_flipkart'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
