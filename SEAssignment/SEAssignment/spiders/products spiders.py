@@ -31,8 +31,8 @@ class QuotesSpider(scrapy.Spider):
             yield {
                 'name': quote.css('.ProductItem24__designer::text').get(),
                 'brand': quote.css('.ProductItem24__name::text').get(),
-                'price': quote.css('span::text')[2].get(),
-                'sale_price': quote.css('span::text')[2].get(),
+                'price': float(quote.css('span::text')[2].get()[1:].replace(',', '')),
+                'sale_price':float(quote.css('span::text')[2].get()[1:].replace(',', '')),
                 'image_url': quote.css('img').xpath('@src').get(),
                 'product_page_url': response.css('.ProductGrid52 a::attr(href)').get(),
                 'product_category': category
