@@ -2,7 +2,7 @@ import scrapy
 
 
 class QuotesSpider(scrapy.Spider):
-    name = "products"
+    name = 'items'
 
     def start_requests(self):
         urls = [
@@ -10,30 +10,36 @@ class QuotesSpider(scrapy.Spider):
         ]
         for i in range(2, 27):
             urls.append(
-                "https://www.net-a-porter.com/en-in/shop/clothing/tops?pageNumber="+str(i))
-        for i in range(1, 27):
+                'https://www.net-a-porter.com/en-in/shop/clothing/tops?pageNumber='+str(i))
+        for i in range(1, 35):
             urls.append(
-                "https://www.net-a-porter.com/en-in/shop/shoes?pageNumber="+str(i))
+                'https://www.net-a-porter.com/en-in/shop/shoes?pageNumber='+str(i))
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        # title = response.css('title::text').get()
-        # yield {'title': title}
-        # for quote in range(50):
-        # items['Titles'] = title
-        for quote in response.css('div.ProductItem24__p'):
+        for data in response.css('div.ProductItem24__p'):
+            ext_price = data.css('.PriceWithSchema9__value span::text').get()
+            price = ''
+            for p in ext_price:
+                if p != '$' and p != ',':
+                    price += p
+            price = float(price)
+            image = data.css('.secondaryImage img').xpath(
+                '@src').extract_first()
+            if image is None:
+                image = data.xpath('//img/@src').extract_first()
             category = response.css(".FilterTags52__tag::text").get()
             if category == "Tops":
                 category = 'Topwear'
             else:
                 category = 'Footwear'
             yield {
-                'name': quote.css('.ProductItem24__designer::text').get(),
-                'brand': quote.css('.ProductItem24__name::text').get(),
-                'price': float(quote.css('span::text')[2].get()[1:].replace(',', '')),
-                'sale_price':float(quote.css('span::text')[2].get()[1:].replace(',', '')),
-                'image_url': quote.css('img').xpath('@src').get(),
-                'product_page_url': response.css('.ProductGrid52 a::attr(href)').get(),
-                'product_category': category
+                'Name': data.css('.ProductItem24__designer::text').get(),
+                'brand': data.css('.ProductItem24__name::text').get(),
+                'original_price': price,
+                'sale_price': price,
+                'image_url': image,
+                'product_page_url': data.css('meta').xpath('@content').extract_first(),
+                'product_category': category,
             }
